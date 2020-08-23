@@ -1,0 +1,509 @@
+---
+title: "Introduction to data processing R and Tidyverse"
+author: "Peeter Tinits"
+date: "8/24/2020"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+editor_options:
+  chunk_output_type: console
+---
+
+
+# Introduction
+
+R is a programming language and a free and open source development environment that is built for data processing, analysis and visualization. RStudio is an additional tool that greatly helps the use of R. *Tidyverse* is a collection of packages that aims helps perform analyses in R relying on a common philosophy and grammar.
+
+This study material gives an introduction to simpler data processing in R following *tidyverse* principles. The study of R can be began from *tidyverse* (and some teachers suggest this) - however the collection of packages is relatively new and more experienced R users may not have yet fully mastered it. These materials could fit both, complete beginners or experienced users, simply skip the sections before tidyverse, if you already know R.
+
+## Why R?
+
+A main benefit of R compared to other ways of processing data is its reliance on the command line. A whole pipeline or processing can through this stored in a file or a set of files, and the analysis reproduced in exact detail from these files. Through this, the analysis documents itself and affords other researchers or even the original author to quickly restore the processes done in the future. This allows an analysis that is
+
+- transparent
+- flexible
+- reproducible
+
+It is sometimes said that the most important collaborator of a researcher is her/himself six months ago (who performed the original analysis). She/he however does not answer e-mails. If the analysis has been stored in the script file and is adequately commented, the analysis can be restored with a minimal effort. If then, a mistake is found, or new data or methods are sought to be applied, then the code can be rerun again after a few edits. And as a free bonus, other researchers can also check the validity of the analysis, from which the scientific community can benefit as a whole.
+
+Selfishly, R allows you to improve your workflow, perform analyses, and show your findings in an attractive way. See a nice visualization [here](https://www.gapminder.org/answers/how-does-income-relate-to-life-expectancy/) by Hans Rosling. We can make quite the same graph with just a few lines in R that can be easily read, once you know the basics.
+
+```{r, include=F}
+library(tidyverse)
+library(gapminder)
+
+```
+
+```{r}
+gapminder %>%
+  group_by(country) %>%
+  filter(year==max(year)) %>%
+  ggplot(aes(y=lifeExp,x=gdpPercap,size=pop,color=continent))+
+  geom_point()+
+  scale_x_log10()
+```
+
+
+
+## Tidyverse
+
+[Tidyverse](https://www.tidyverse.org/) is a set of packages in R that aims to follow a common philosophy and grammar in creation of algorithms. Primarily the logic of *literate programming*. Through this, *tidyverse* lays focus on:
+
+- a simple and readable code
+- compatibility of operations and data structures
+- quick and easy learning pathway
+
+*Tidyverse* deliberately ignores a large part of R's basic syntax with the aim of simplifying common steps in data processing. *Tidyverse* packages may not be the most efficient for the computer, and they can not be used to do anything, but generally they do the job. *Tidyverse* is also known for a large active support community, and the packages are continuously improved and developed. The main packages in *tidyverse* are *ggplot2*, *dplyr*, *tidyr*, *readr*, *purrr*, *tibble*, *stringr* ja *forcats*.
+
+
+
+# What is R? What is RStudio?
+
+R is a programming language and a free and open source development environment that is built primarily for data processing, analysis, and visualization. RStudio is an additional tool that greatly helps the use of R. RStudio works well in an ordinary personal computer (Windows, Mac, or Linux), but it is also possible to use it via a browser.
+
+## Installation
+
+First install R (latest version is ok), then install RStudio (latest version is ok). Detailed and up-to-date instructions for installation are given in the following pages.
+
+1. Install R: https://cran.rstudio.com/
+  - Windows: https://cran.rstudio.com/bin/windows/base/
+  - Mac: https://cran.rstudio.com/bin/macosx/
+  - Linux: https://cran.rstudio.com/bin/linux/ (vt readme-d)
+2. Install RStudio:
+  https://www.rstudio.com/products/rstudio/download/
+
+## Rstudio Cloud
+
+It is possible to use also a browser-based solution RStudio Cloud: https://rstudio.cloud/. Make a user through 'sign up' and log in. You can make a separate project for each undertaking there.
+
+![](figures/rstudio_cloud_signup.png)
+
+
+## Materials
+
+Materials are posted on github, here is a .zip file link. There are several ways to open this in your computer.
+
+### On a personal computer
+
+On a personal computer, first extract the zip files. If you simply click on the zip and then an R file, the computer won't extract the rest of the files, so be sure to extract the entire zip file.
+
+If the files are extracted and RStudio is installed, you can simply click on the .Rproj file. It will open RStudio and also set up some settings, e.g. the working directory in the same folder. Alternatively, a project file can also be opened from inside the RStudio by pressing the button on the right: "Project: (None)" -> Open project, and then find the Rproj file.
+
+![](figures/project_none.png)
+
+If you are not using the .Rproj project file, it is important to set the working directory. For this, look at the lower right box, that has files (make sure that "Files" tab is selected), and press on the small icon with three periods (...). This opens an explorer window to move the directory to the right place.
+
+![](figures/gotodir.png)
+
+Move to the correct directory, where you have placed the extracted files, and then click on the button 'More' next to the blue cog wheel. Select Set As Working Directory in there. This runs the command setwd() in the console, which sets the working directory. To automate this you can for example copy this line to the beginning of the script file to get the correct working directory. (However, this will work only on your own computer, as long as you do not move the files, and you will later find more robust ways to set the correct directory). It is possible to check the working directory with the command getwd(). 
+
+![](figures/setasworkingdir.png)
+
+### In a browser
+
+To open the materials in RStudio Cloud, you need to first create a project under your username. Within that project you see a similar panel with a Files tab. This has an extra button - Upload. Click on that and select the zip file that you have downloaded. This will upload the zip file and extract it in the online server. The files and any changes you make will remain connected to your personal account.
+
+![](figures/upload_to_cloud.png)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction to RStudio
+
+![](figures/RStudio_vaade.png)
+
+RStudio typically looks like can be seen above. The positions of the panes can be moved, and their relative sizes changed, but at first, it is good to keep them as they are.
+
+- Top-left is the script window.
+- Top-right are the variables and usage history
+- Bottom-left is the console that runs the code
+- Bottom-right are files, plots and help.
+
+## A stylistic recommendation
+
+One more stylistic recommendation to get you started - turn on word-wrap or soft-wrap, so the text does not disappear off the right edge. This will split the lines, so you may choose to not use this later. But for beginning, to make sure that no text gets lost, I'd recommend turning it in.
+For this find the following place in the menu:
+Tools -> Global options -> Code -> Editing -> Soft-wrap R source files (turn it on)
+
+## Recommended literature
+
+To learn R further following Tidyverse principles, I recommend the following book.
+- Garrett Grolemund, Hadley Wickham. 2017. R for Data Science. O'Reilly Media https://r4ds.had.co.nz/
+
+
+# Basics of R
+
+## R and the command line
+
+Interaction with R is done via commands. When you enter a command into R and press ENTER, R will try to compute the command and display its results. The results can be also saved for later reuse by a variable. R scripts assemble many commands that can be run in sequence, one by one or from beginning to the end. It is good to assemble commands in a script file, as it makes it easy to reproduce the same computations, fix some parts of a sequence if an error is found, or shared with another researcher.
+
+Script files are usually used by running all commands from the beginning. Later commands may rely on earlier processing. Thus, frequently, when a line in the script is not working, it can be helpful to run all the lines from the beginning to that point.
+
+R allows scripts to be saved in a simple text file with .R extension, or an Rmarkdown file with and .Rmd extension. Rmarkdown is an extra feature of R that allows code and its supporting text to be kept in the same file.
+
+Both in .R and .Rmd files, it is possible to run commands one by one via RStudio. Generally, a command is rooted on one line, and to run it, place a cursor on the line and press CTRL+ENTER (on Win/Linux) or CMD+ENTER (Mac). The same can be accomplished by clicking the 'Run' button on the top right of the script panel. It is possible to select several rows or just a part of one row - in this case R will run the code within the selection. To run a command in the console window (usually bottom left), simply place ENTER.
+
+In front of all commands, it is possible to add a question mark and running it to display the associated help files bottom right.
+
+
+```{r, eval = F}
+?read.csv
+```
+
+
+## R as a simple calculator
+
+It is possible to do simple mathematics in R. For example, we can give 5+7 as a command, R will run it, and print out the result.
+
+```{r}
+5 + 7
+```
+
+You can see the result above. If you run a command in RStudio, the result will go to the console. 5 and 7 were here input parameters and + was the operation that R performed, in this case performing addition. You can perform other mathematics too.
+
+```{r}
+1+1
+4-2
+4*2
+27*17
+459/17
+sqrt(25)
+```
+
+Asterisk (*) is multiplication, a slash (/) is division. sqrt() takes a square-root of the number given. This is also a very typical R command by following the pattern.
+
+    function(input)
+
+Tidyverse also offers an alternative approach.
+
+    input %>% 
+        function()
+
+They both do the same thing, tidyverse command uses the pipe (%>%) to feed the data as input to the function. More on this soon.
+
+## Storing results
+
+R can be used as a calculator, but its true strength comes out when a dataset or functions need to be used multiple times. For this, R allows you to easily store both data and functions for later reuse.
+
+Usually you use an arrow for this <- (formulated from a less-than and a hyphen). A single equation sign = can also be used in the same meaning in most cases. The assignment operator can be also type with ALT+hyphen. This will in some computers give =, some computers <-. In R one equation mark = has a completely different meaning from a double equation mark == so pay attention there. Generally, R users will use <- as the main assignment operator so we can follow the same tradition here.
+
+We can start by creating a variable x, that has the content 5+7. For this write x <- 5 + 7.
+
+
+```{r}
+x <- 5 + 7
+```
+
+When R saves the result into a variable, it will not print it out. This is because on saving it will assume that we want to keep working on it. To see the contents of the variable, simply enter its name into the console.
+
+```{r}
+x
+```
+
+We can use a variable to create another variable. For example, we can create a variable y that is made up of x and 3. R finds the value of x and uses that to calculate the value of y. If x hadn't been set, than R wouldn't accept y as defined like this.
+
+```{r}
+y <- x - 3
+```
+
+We can look at the value of y in the same way.
+
+```{r}
+y
+```
+
+Now, if we change x, y no longer changes. We can change x into 4 and see that the value of y remains as before. This is because the computation was already performed. R did not store that we used the variable x to calculate it, it simply took its current value.
+
+```{r}
+x <- 4
+y
+```
+
+X can be assigned with an arrow <- or an equation mark = . The following equations are equal.
+
+```{r}
+x <- 4
+x =  4
+```
+
+## Order of computation
+
+In making calculations, the order of computations matters. In the same way as in mathematics, we can use brackets to determine the order. As in basic mathematics, the following two operations give different results.
+
+```{r}
+z <- x+y*2
+z
+z <- (x+y)*2
+z
+
+```
+
+## Equality and inequality
+
+Very often in data analysis, we need to compare two values. For example, we want to find all people that are older than 60, or all data that is from January 2010. For this, R has various operations to check for equality or inequality.
+
+Two equation marks tests, whether two objects are exactly equal and will answer to that with TRUE or FALSE. When writing code, T and F are shorthands for TRUE and FALSE.
+
+```{r}
+1==1
+1==2
+x==4
+x==y
+x==y*2
+```
+
+Negation is marked with an exclamation mark !. To test whether two values are not equal, we can use combine the exclamation with an eqation. We can use for that a given operation != or put ! in front of the test. The following operations check for a negation of equality or inequality.
+
+```{r}
+1!=1
+1!=2
+!1==1
+!1==2
+```
+
+In addition to equality, we can test whether the first number is smaller than <, larger than >, smaller or equal <=, or larger or equal >= than the other number.
+
+```{r}
+1 < 1
+2 > 1
+1 <= 1
+2 >= 2
+
+```
+
+
+## Variable names and text
+
+In addition to numbers, R also allows for text processing. To not confuse variable names and text, text should always be given in quotation marks. If we write x or y without quotations, R will find the variables and print out their values. Quotation marks can be simple 'like this' or double "like this". More complicated quotation marks e.g. “latin quotation marks” will not work and will give an error.
+
+```{r}
+x
+y
+'x'
+"y"
+```
+
+As long as it is embedded within quotation marks, text can be no matter how long.
+
+```{r}
+"Here is a sentence as a text element."
+```
+
+And also this can be stored as a variables.
+
+```{r}
+
+a <- "Here is a sentence as a text element."
+
+```
+
+The name of the variable can be anything. It just can not begin with a number 0-9, contain hyphens -, colons :, hashtags #, or anything else that has a meaning in R basic syntax. The variable can use both capital and non-capital letters. For example welcomeToTheWorkshopVariableHere.
+
+```{r}
+
+welcomeToTheWorkshopVariableHere <- "Here is a sentence as a text element."
+
+```
+
+There is a general recommendation that variable names could be informative rather than simply a, b, or c, since it is easy to forget which letter was which, when looking at a code at a later date.
+
+If we forget to use the quotation marks around text, R will give us an error. It can't find a variable with this name.
+
+```{r, eval=F}
+tundmatumuutujanimi
+```
+
+```{r}
+# Error: object 'tundmatumuutujanimi' not found.
+```
+
+Such error messages will be given whenever there is an error in the code, and R can not run it. Often this can be due to missing or misplaced brackets, and for this R may think that something is an object when it should be a function. If you can't find an error yourself, it is useful to try to copy the error into google. Since similar errors occur often for others too, often the first or second response will give a solution.
+
+## Sequences
+
+Usually, R works with more than one value at a time, by using sequences or vectors. These sequences can be made of numbers or text values or even tables (although this will not be explained in this workshop).
+
+For this there are two simpler options. With a colon, it is possible to make a number sequence by defining the beginning and end. With c() function, we can make a concatenation of any values of the same type. There are other similar functions, e.g. seq() or rep(), you can explore these later yourself. Below are sequences 1 to 10 and a, b, c.
+
+```{r}
+1:10
+c("a","b","c")
+```
+
+c() also allows you to add other stored variables into the sequence. If a sequence contains at least one text element, it will make them all of equal type as text. And if a sequence contains another sequence, it will set them on the same level.
+
+```{r}
+x <- 4
+
+c("a", 1, x)
+
+c(1, 4, 8)
+
+c(1:8, 2, 4)
+
+c(4, 6, c(1, 2, 3))
+
+```
+
+To check if an element is contained in a sequence %in% command is used. %in% checks if the first element is present in the second.
+
+```{r}
+1 %in% 1:10
+```
+
+This can be applied in comparing also several sequences. Next, we check which elements of 2 to 10 are also present in 1 to 5.
+
+```{r}
+2:10 %in% 1:5
+```
+
+We can do the same with a text sequence.
+
+```{r}
+c("a","b","c","f") %in% c("a","b","c","d","e")
+```
+
+%in% can also be combined with an exclamation mark ! for negation.
+
+```{r}
+!2:10 %in% 1:2
+
+```
+
+Sequences or vectors can be stored as any other R object.
+
+```{r}
+numbervector <- 1:10
+numbervector
+
+textvector <- c("a", "b", "c", "d","e","f","g","h","i","j")
+textvector
+
+```
+
+In addition to numbers and texts, R has another important vector type, factor. Factors are categorical variables that have a small number of types that are repeatedly used.
+
+```{r}
+onefactor <- factor(c("a","a","a","a","a","b","b","b","b","b"))
+onefactor
+
+```
+
+For example above is a 10 element length factor with two value types, a and b. A factor also has a property of levels, where the types are defined.
+
+```{r}
+levels(onefactor)
+```
+
+Levels can be renamed, this will change the values in the entire sequence.
+
+```{r}
+levels(onefactor) <-c("woman","man")
+onefactor
+```
+
+And the sequence of levels can be changed. Changing the sequence of levels does not change the sequence itself. a will remain a and b will remain b
+
+```{r}
+onefactor <-factor(onefactor,levels=c("man","woman"))
+onefactor
+```
+
+The sequence of levels plays an important role in creating models and graphs. When reading in files, it is good to check that some expected text or number variable was not read in as a factor. Until April 2020, this was the default behaviour for reading text variables in basic R commands (unless *stringsAsFactors* was set to FALSE). Since, R 4.0.0 this is no longer done. Tidyverse packages do not make strings into factors when reading files.
+
+You can check the types of a variable with the structure command str().
+
+```{r}
+str(onefactor)
+str(textvector)
+```
+
+
+## R packages
+
+In addition to basic commands, R has a lot of extra packages, that open up new use possibilities, and make the existing ones more convenient or efficient. Here, we look at the *tidyverse* packages, which aim to do both.
+
+For every package you need to first 1) install it in your computer, and second 2) turn it on every time you start R or RStudio.
+
+To install a package there is a command install.packages(). The same command can be found in the menu above Tools -> Install Packages, where you can write the packages you want separated by comma and helped by a convenient autocomplete. Newer versions of RStudio will also show above the script window on a yellow bar if a script includes some packages that are not installed. If you pick install there, then it also runs the install.packages command.
+
+First, let's install the tidyverse packages to your computer. It takes a little while, let the computer work. In the console you will see what is installed - there may be red text and sometimes errors, but as long as you see "* DONE (tidyverse)" at the end, then everything is fine. During installation, a red stop button will start to flash at the top right of the console. Do not press that. If you press it, it may break the installation, and give unclear errors. If this happens, then usually remove.packages() for the same packages restores the original state, and you can install them aian.
+
+```{r,eval=F}
+install.packages("tidyverse")
+```
+
+To activate a package, we can use the function library(). Almost the same function is require(), but let's use library() here.
+
+```{r}
+library(tidyverse)
+```
+
+![](figures/activate_tidyverse.png)
+
+When activating *tidyverse* in your personal computer, you should see something like this. It will show a few conflicts, but these are nothing to worry about now. They show that another package used functions with the same names, and the functions from the most recent package will be used. 
+
+From the printout you can see, that R has activated packages ggplot2, purr, tibble, dplyr, tidyr, stringr, readr ja forcats. Most of the packages will activate themselves and a number of other packages that they rely on, so the errors may be different, or most commonly no messages will be shown. As long as no errors are shown with the library() command, the package should have been activated without issues.
+
+
+
+An additional note: Packages can be used in more ways. Even without running the library() command it is possible to start commands from inactive packages by adding a package name before the command and two colons.
+
+```{r}
+library(readr)
+gapminder <- read_csv("data/gapminder.csv")
+```
+
+```{r}
+gapminder <- readr::read_csv("data/gapminder.csv")
+```
+
+
+## Tidyverse and tidy data logic
+
+*Tidyverse* can be considered one of the dialects of R. Most common ones nowadays are maybe *base-R*, *tidyverse*, *data.table*, although there is a large variety of different ways to process data in R. The dialects vary in their functions and basic syntax, and afford some tasks to be done easier, while other tasks may be easier in other dialects.
+
+*Tidyverse* packages aim to follow a common logic and grammar - and in its own words form "an opinionated collection of R packages designed for data science". The packages work well with a standard format of a data. Here, this is often referred to as *tidy data*, which follows a very simple logic: each row of a table should be an observation, each column a variable and each field the corresponding value. The idea is not new, and many tables have followed this structure. However there are also many ways that data tables can differ from this. See some examples in the [Hadley, 2014 paper](https://vita.had.co.nz/papers/tidy-data.pdf) describing these principles. For a human eye, this may not seem the most efficient way to keep data, but for machine processing, this is one way to keep it standard and simple. What exactly we want from a dataset, and what constitutes an "observation" is a also dependent on the questions that we ask.
+
+
+<center>
+![](figures/tidy_data.png)
+</center>
+
+A main command in tidyverse R is the pipe %>%  function. This has a specific type of logic that was not used in base R, but is used in other types of programming. In command line | has the same function. The function feeds a bit of data forward to a function. If a line ends with a pipe it will know that the this is not the end of the command, but will seek a continuation elsewhere. Thus, when using pipes, it is important to check that it does not end with a pipe.
+
+The basic model in R is thus the following.
+
+```{r, eval = F}
+var <- data %>% 
+  function1() %>% 
+  function2()
+```
+
+Commonly, the same two-step function would have been done via embedding as below,
+
+```{r,  eval = F}
+
+var <- function1(
+  function2(
+    data
+    )
+  )
+  
+```
+
+or via storing temporary variables.
+
+```{r,  eval = F}
+
+var_temp <- function1(data)
+var <- function2(var1)
+
+```
+
+Which dialect you prefer will depend on individual preferences and experiences, the pipe %>%  however may considerably increase readability of the code if many sequential processing steps are involved. A pipe %>%  can be easily made in RStudio by pressint CTRL+M at the same time.
+
