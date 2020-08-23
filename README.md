@@ -32,7 +32,7 @@ To install R follow the links here:
 If you do not want or can't install R on your computer, you can follow the workshop also by using RStudio Cloud https://rstudio.cloud/ which creates an online R environment for you to use. In this case, sign up as a user before the workshop.
 
 ### Downloading the files in the repository
-1) Click on the download .zip link in the top right green button, or follow this link: https://github.com/peeter-t2/TM-TartuSummer2020/archive/master.zip
+1) Click on the download .zip link in the top right green button, or follow this link: https://github.com/peeter-t2/IntroR_DIGMET2020/archive/master.zip
 2) Unpack the files where you want them.
 
 ## After the files are downloaded
